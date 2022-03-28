@@ -35,12 +35,10 @@ const login = (req, res) => {
     })
 
 }
-const logout = async (req, res) => {
+const logout = (req, res) => {
     res.clearCookie('token');
     res.json({
         message: "Logout"
     })
-
-
 }
 export { login, logout }

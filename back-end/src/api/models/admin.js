@@ -19,7 +19,11 @@ const adminSchema = new mongoose.Schema({
   },
   salt: {
     type: String
-  }
+  },
+  role: {
+    type: String,
+    default: 'ADMIN',
+  },
 }, {
   timestamps: true
 });

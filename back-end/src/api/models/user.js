@@ -18,10 +18,6 @@ const userSchema = new mongoose.Schema({
     required: true,
     unique: true,
   },
-  isVerified: { 
-    type: Boolean,
-    default: false,
-  },
   hashed_password: {
     type: String,
     required: true,
@@ -52,6 +48,7 @@ userSchema.methods = {
   authenticate: function(pass){
     return this.cryptPass(pass) === this.hashed_password;
   },
+  
   cryptPass: function (password) {
     if (!password) return '';
     try {

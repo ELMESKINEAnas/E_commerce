@@ -6,19 +6,19 @@ export const createToken = (payload = null, role = null) => {
   if (!payload) return null;
   if (!role) return null;
   switch (role) {
-    case "ADMIN":
+    case "SUPERADMIN":
       return jwt.sign(payload, process.env.SECRET_KEY_ADMIN, {
         expiresIn: "1h",
       });
-    case "MANAGER":
+    case "ADMIN":
       return jwt.sign(payload, process.env.SECRET_KEY_MANAGER, {
         expiresIn: "1h",
       });
-    case "DELIVERY_MANAGER":
+    case "SELLER":
       return jwt.sign(payload, process.env.SECRET_KEY_DELIVERY_MANAGER, {
         expiresIn: "1h",
       });
-    case "DRIVER":
+    case "CUSTOMER":
       return jwt.sign(payload, process.env.SECRET_KEY_DRIVER, {
         expiresIn: "1h",
       });
@@ -32,16 +32,16 @@ export const verifyToken = (token = null, role = null) => {
   if (!role) return null;
   try {
     switch (role) {
-      case "ADMIN":
+      case "SUPERADMIN":
         return jwt.verify(token, process.env.SECRET_KEY_ADMIN);
         break;
-      case "MANAGER":
+      case "ADMIN":
         return jwt.verify(token, process.env.SECRET_KEY_MANAGER);
         break;
-      case "DELIVERY_MANAGER":
+      case "SELLER":
         return jwt.verify(token, process.env.SECRET_KEY_DELIVERY_MANAGER);
         break;
-      case "DRIVER":
+      case "CUSTOMER":
         return jwt.verify(token, process.env.SECRET_KEY_DRIVER);
         break;
       default:

@@ -1,6 +1,7 @@
 import Customer from "../models/customer";
 import User from "../models/user";
 import EmailSend from "../helpers/email";
+import Order from "../models/orders";
 
 
 const createCustomer = (req, res) => {
@@ -58,9 +59,8 @@ const createCustomer = (req, res) => {
             //Email Verification
             const { id } = user._id;
 
-            let subj = "Please Verify Your Account";
-            let msg = ` email : ${email}
-                confirm_email : http://localhost:3030/api/admin/confirmEmail/${id}`;
+            let subj = "Inoformation";
+            let msg = `confirm_email : http://localhost:3030/api/customer/confirmEmail/${id}`;
             EmailSend.mail(email, subj, msg)
             
             user.hashed_password=undefined
@@ -80,7 +80,7 @@ const confirmEmail = async (req, res) => {
 
             try {
             const { id } = req.params;
-            await User.findOneAndUpdate({id}, {"isVerified":true});
+            await Customer.findOneAndUpdate({id}, {"isVerified":true});
 
             res.status(200).json({
                 status: true,
@@ -93,9 +93,43 @@ const confirmEmail = async (req, res) => {
                 message: e.message
                 })
             }
+}
+
+
+// create orders
+const createOrder = async (req, res) => {
+    const {
+        
+        products,
+        quantity,
+        status,
+    } = req.body;
+
+    const order = new Order({
+        products,
+        quantity,
+        status,
+    });
+
+    try {
+        const savedOrder = await order.save();
+        res.status(200).json({
+            status: true,
+            data: savedOrder
+        })
+    } catch (e) {
+        res.status(400).json({
+            status: false,
+            message: e.message
+        })
     }
+}
 
 
 
 
-export {createCustomer,confirmEmail}
+
+
+
+
+export {createCustomer,confirmEmail,createOrder}

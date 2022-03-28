@@ -20,6 +20,12 @@ const costumerSchema = new mongoose.Schema({
     trim: true,
     required: true,
   },
+  isVerified : {
+    type: String,
+    trim: true,
+    required: true,
+    default: false,    
+  },
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User',
