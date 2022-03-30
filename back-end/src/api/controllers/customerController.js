@@ -76,6 +76,24 @@ const createCustomer = (req, res) => {
     })
 }
 
+//delete customer
+const deleteCustomer = async (req, res) => {
+    const { id } = req.params;
+    const user = await User.findById({
+        _id: id
+    })
+    if (!user) {
+        return res.status(404).send({
+            message: "User not found with id " + id
+        });
+    }
+    user.remove()
+    return res.json({
+        message: "User deleted successfully!"
+    });
+}
+
+
 const confirmEmail = async (req, res) => {
 
             try {
