@@ -78,20 +78,57 @@ const createCustomer = (req, res) => {
 
 //delete customer
 const deleteCustomer = async (req, res) => {
-    const { id } = req.params;
-    const user = await User.findById({
-        _id: id
-    })
-    if (!user) {
-        return res.status(404).send({
-            message: "User not found with id " + id
-        });
-    }
-    user.remove()
+
+    try {
+        const {
+           id,
+        } = req.params
+  
+        const customer = await Customer.findById({ _id: id })
+
+        customer.remove()
     return res.json({
-        message: "User deleted successfully!"
+        message: "Customer deleted successfully!"
     });
+     } catch (e) {
+        res.status(400).json({
+           status: false,
+           message: "Customer not found"
+        })
+     }
+
 }
+
+// find and update user
+const updateCustomer = async (req, res) => {
+    try {
+        const {
+            id,
+        } = req.params
+        const {
+            Address,
+            city,
+            zipCode,
+            phone,
+        } = req.body
+        const customer = await Customer.findById({ _id: id })
+        // customer.Address = Address
+        // customer.city = city
+        // customer.zipCode = zipCode
+        // customer.phone = phone
+        customer.findOneAndUpdate(req.body)
+
+        return res.json({
+            message: "Customer updated successfully!"
+        });
+        } catch (e) {
+            res.status(400).json({
+                status: false,
+                message: "Customer not found"
+            })
+        }
+}
+
 
 
 const confirmEmail = async (req, res) => {
@@ -150,4 +187,4 @@ const createOrder = async (req, res) => {
 
 
 
-export {createCustomer,confirmEmail,createOrder}
+export {createCustomer,confirmEmail,createOrder, deleteCustomer, updateCustomer}

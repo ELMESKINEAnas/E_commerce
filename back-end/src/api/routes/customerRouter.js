@@ -3,7 +3,11 @@ const router = express.Router();
 
 
 import {
-    createCustomer ,confirmEmail, createOrder,
+    createCustomer,
+    confirmEmail,
+    createOrder,
+    deleteCustomer,
+    updateCustomer
 } from "../controllers"
 
 // import {
@@ -14,5 +18,7 @@ import {
 router.get("/confirmEmail/:id", confirmEmail)
 router.post("/createCustomer", createCustomer)
 router.post("/createOrder", createOrder)
+router.delete("/deleteCustomer/:id", deleteCustomer)
+router.patch("/updateCustomer/:id", updateCustomer)
 
 export { router }

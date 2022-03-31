@@ -25,5 +25,5 @@ from "./Auth/auth_AdminController";
 export {loginSuperAdmin,logoutSuperAdmin}
 from "./Auth/auth_SuperAdminController";
 
-export {createCustomer,confirmEmail,createOrder} 
+export {createCustomer,confirmEmail,createOrder, deleteCustomer,updateCustomer} 
 from "./customerController";

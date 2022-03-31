@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+import User from '../models/user';
 const costumerSchema = new mongoose.Schema({
   Address: {
     type: String,
@@ -34,5 +35,10 @@ const costumerSchema = new mongoose.Schema({
   timestamps: true
 }, {
   collection: "customers"
+})
+costumerSchema.pre('remove',async function(next){
+  const customer = this
+  await User.deleteOne({_id:customer.user})
+  next()
 })
 module.exports = mongoose.model('Costumer', costumerSchema);
