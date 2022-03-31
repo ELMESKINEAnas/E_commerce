@@ -99,26 +99,42 @@ const deleteCustomer = async (req, res) => {
 
 }
 
-// find and update user
+// update user
 const updateCustomer = async (req, res) => {
     try {
         const {
             id,
         } = req.params
+
         const {
+            firstName,
+            lastName,
+            email,
+            password,
             Address,
             city,
             zipCode,
             phone,
         } = req.body
-        const customer = await Customer.findById({ _id: id })
-        // customer.Address = Address
-        // customer.city = city
-        // customer.zipCode = zipCode
-        // customer.phone = phone
-        customer.findOneAndUpdate(req.body)
 
-        return res.json({
+        const costumerData = {
+            Address : Address,
+            city : city,
+            zipcode : zipCode,
+            phone : phone
+        }
+
+        const userData = {
+            firstName,
+            lastName,
+            email,
+            password,
+        }
+        
+        const customer = await Customer.findOneAndUpdate({ _id: id }, costumerData, { new: true });
+        const user = await User.findOneAndUpdate({ _id: id }, userData, { new: true });
+        
+        return res.status(400).json({
             message: "Customer updated successfully!"
         });
         } catch (e) {
@@ -153,8 +169,8 @@ const confirmEmail = async (req, res) => {
 
 // create orders
 const createOrder = async (req, res) => {
+
     const {
-        
         products,
         quantity,
         status,
