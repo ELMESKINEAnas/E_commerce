@@ -38,8 +38,8 @@ const getAllShippingCompany = async (req, res) => {
 const addShippingCompany = async (req, res) => {
 
     try{
-        const { name } = req.body  
-        const shippingcompany = await ShippingCompany.create({ name });
+        const { name,time } = req.body  
+        const shippingcompany = await ShippingCompany.create({ name,time });
         return res.status(201).json({
             status : true,
             message : shippingcompany
@@ -76,8 +76,8 @@ const updateShippingCompany = async (req, res) => {
 
     try {
         const { id } = req.params;
-        const { name } = req.body;
-        await ShippingCompany.findOneAndUpdate({id}, {name});
+        const { name,time } = req.body;
+        await ShippingCompany.findOneAndUpdate({id}, {name,time});
 
         res.status(200).json({
            status: true,

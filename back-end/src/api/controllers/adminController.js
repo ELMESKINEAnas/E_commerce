@@ -1,62 +1,34 @@
-import User from "../models/user.js"
 import Admin from "../models/admin"
 const logger = require('../../config/winston');
-const EmailSend = require('../helpers/email')
+const EmailSend = require('../helpers/email');
 
 
 const createAdmin = (req, res) => {
-
     const {
         username,
         email,
         password,
-    } = req.body;
+    } = req.body
 
-    const UserData = {
-        email,
-        password,
-        role: "ADMIN",
-
-    }
-
-    const user = new User(UserData);
-    user.save((err, User) => {
-        if (err) {
-            logger.error(err);
-            return res.status(400).send(err)
-
-        }
-        const AdminData = {
-            username: username,
-            user: user._id,
-            _id: user._id
-
-        }
-        const admin = new Admin(AdminData);
-        admin.save(async (err, Admin) => {
+        const admin = new Admin({username,email,password});
+        admin.save(async (err, admin) => {
             if (err) {
-                const user = await User.findById({
-                    _id: user._id
-                })
-                user.remove()
                 logger.error(err);
                 return res.status(400).send(err)
             }
-            user.hashed_password=undefined
-            user.salt=undefined
+            admin.hashed_password=undefined
+            admin.salt=undefined
             let subj = "Your Login Info";
-            let msg = ` email : ${email}
-                password : ${password}`;
+            let msg = ` email : ${admin.email}
+                password : ${admin.password}`;
                 
-            EmailSend.mail(email, subj, msg)
-            logger.info(`Admin user:${req.body.username} created!`);
+            EmailSend.mail(admin.email, subj, msg)
+            logger.info(`Admin user:${admin.username} created!`);
             return res.json({
-                user,
-                admin
+                admin,
+                msg: "Admin Created Successfully" 
             })
         })
-
-    })
 }
 const updateAdmin = async (req, res) => {
     console.log(req.body)
@@ -133,7 +105,7 @@ for(let key in req.body.filters){
 
 const getAllAdmins = async (req, res) => {
     try {
-        const admins = await Admin.find().populate("user")
+        const admins = await Admin.find()
         res.status(200).json({
             status: true,
             admins
@@ -152,7 +124,7 @@ const getAdmin = async (req, res) => {
     try {
         const admin = await Admin.findById({
             _id: id
-        }).populate("user")
+        })
         res.status(200).json({
             status: true,
             admin

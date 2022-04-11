@@ -1,4 +1,5 @@
 import Product from "../models/product";
+import Category from "../models/category";
 
 const getProduct = async (req, res) => {
 
@@ -19,36 +20,41 @@ const getProduct = async (req, res) => {
 }
 
 const getAllProduct = async (req, res) => {
-
+    const qNew = req.query.new;
+    const qCategory = req.query.category;
     try {
-        const docs = await Product.find();
-        return res.status(200).json({
-            status : true,
-            message : docs
-        })
-    }catch(err){
-        return res.status(400).json({
-            status : false,
-            message: err.message
-        })
+      let products;
+  
+      if (qNew) {
+        products = await Product.find().sort({ createdAt: -1 }).limit(1).populate("category").populate("brand").populate("store_id");
+      } else if (qCategory) {
+        products = await Product.find({
+          category: {
+             $in : await Category.findOne({ name: qCategory }).then(category => {
+                return category._id;
+            })
+          },
+        }).populate("category").populate("brand").populate("store_id");
+      } else {
+        products = await Product.find().populate("category").populate("brand").populate("store_id");   
+      }
+  
+      res.status(200).json(products);
+    } catch (err) {
+      res.status(500).json(err);
     }
     
 } 
 
 const addProduct = async (req, res) => {
 
-    try{
-        const { name } = req.body  
-        const category = await Product.create({ name });
-        return res.status(201).json({
-            status : true,
-            message : category
-        })
-    }catch(err){
-        return res.status(400).json({
-            status : false,
-            message: err.message
-        })
+    const newProduct = new Product(req.body);
+
+    try {
+      const product = await newProduct.save();
+      res.status(200).json(product);
+    } catch (err) {
+      res.status(500).json(err);
     }
 }
 

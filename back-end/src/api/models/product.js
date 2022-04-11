@@ -25,8 +25,10 @@ const productSchema = new mongoose.Schema({
         type: Number
     },
     photo: {
-        data: Buffer,
-        contentType: String
+        // data: Buffer,
+        // contentType: String
+        type: String,
+        require: true,
     },
     category: {
         type: ObjectId,

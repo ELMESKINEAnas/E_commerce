@@ -35,7 +35,7 @@ const loginAdmin = (req, res) => {
             })
         }
 
-        const token = createToken({ admin }, "ADMIN");
+        const token = createToken({ id:admin._id,role:admin.role }, "ADMIN");
         res.cookie('tokenAdmin', token, {
             expires: new Date(Date.now() + 4 * 3600000)
         })

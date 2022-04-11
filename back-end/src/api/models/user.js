@@ -22,6 +22,14 @@ const userSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  phone: {
+    type: String,
+    required: true,
+  },
+  Address: {
+    type: String,
+    required: true,
+  },
   salt: {
     type: String
   },

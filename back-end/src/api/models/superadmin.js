@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
 const crypto = require('crypto')
 import { v4 as uuidv4 } from 'uuid';
-import { $where } from './category';
-const superadminSchema = new mongoose.Schema({
+const superadmiSchema = new mongoose.Schema({
   username: {
     type: String,
     trim: true,
@@ -31,7 +30,7 @@ const superadminSchema = new mongoose.Schema({
 
 
 //Create virtual champs 'password'
-superadminSchema.virtual('password')
+superadmiSchema.virtual('password')
   .set(function (password) {
 
 
@@ -47,7 +46,7 @@ superadminSchema.virtual('password')
 
 
 //Create method for crypt password
-superadminSchema.methods = {
+superadmiSchema.methods = {
 
 
   authenticate: function(pass){
@@ -67,4 +66,4 @@ superadminSchema.methods = {
   }
   
 }
-module.exports = mongoose.model('SuperAdmin',superadminSchema);
+module.exports = mongoose.model('SuperAdmin',superadmiSchema);

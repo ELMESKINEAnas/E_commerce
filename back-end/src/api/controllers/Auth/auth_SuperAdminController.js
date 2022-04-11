@@ -35,7 +35,7 @@ const loginSuperAdmin = (req, res) => {
             })
         }
 
-        const token = createToken({ superAdmin }, "SUPERADMIN");
+        const token = createToken({ id:superAdmin._id,role:superAdmin.role }, "SUPERADMIN");
         res.cookie('tokenSuperAdmin', token, {
             expires: new Date(Date.now() + 4 * 3600000)
         })

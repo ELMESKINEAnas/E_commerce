@@ -3,18 +3,22 @@ const router = express.Router();
 
 
 import {
-    getShippingCompany ,getAllShippingCompany, addShippingCompany, deleteShippingCompany, updateShippingCompany
+    getShippingCompany ,
+    getAllShippingCompany, 
+    addShippingCompany, 
+    deleteShippingCompany, 
+    updateShippingCompany
 } from "../controllers"
 
-// import {
-//     CreatUserValidator,
-//     Auth
-// } from "../middlewares"
+import {
+    Auth
+} from "../middlewares"
+
 
 router.get("/getOne/:id", getShippingCompany)
 router.get("/getAll", getAllShippingCompany)
-router.post("/create", addShippingCompany)
-router.delete("/delete/:id", deleteShippingCompany)
-router.patch("/update/:id", updateShippingCompany)
+router.post("/create",Auth('ADMIN'), addShippingCompany)
+router.delete("/delete/:id",Auth('ADMIN'), deleteShippingCompany)
+router.patch("/update/:id",Auth('ADMIN'), updateShippingCompany)
 
 export { router }

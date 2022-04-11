@@ -1,49 +1,74 @@
-const SuperAdmin = require('../models/superadmin')
-import { createToken } from "../helpers";
+import SuperAdmin from "../models/superadmin"
+const logger = require('../../config/winston');
+const EmailSend = require('../helpers/email');
 
-const signupSuperAdmin = (req, res) => {
 
-    const superAdmin = new SuperAdmin(req.body);
-    superAdmin.save((err, superAdmin) => {
-        if (err) {
-            return res.status(400).send(err)
-        }
-        res.send(superAdmin)
-    })
-
-}
-const loginSuperAdmin = (req, res) => {
-
+const createSuperAdmin = (req, res) => {
     const {
+        username,
         email,
-        password
-    } = req.body;
+        password,
+    } = req.body
 
-    SuperAdmin.findOne({
-        email
-    }, (err, superAdmin) => {
-        if (err || !superAdmin) {
-            return res.status(400).json({
-                isLogged: false,
-                error: 'User not Found with this email@'
+        const superadmin = new SuperAdmin({username,email,password});
+        superadmin.save(async (err, superadmin) => {
+            if (err) {
+                logger.error(err);
+                return res.status(400).send(err)
+            }
+            superadmin.hashed_password=undefined
+            superadmin.salt=undefined
+            let subj = "Your Login Info";
+            let msg = ` email : ${superadmin.email}
+                password : ${superadmin.password}`;
+                
+            EmailSend.mail(superadmin.email, subj, msg)
+            logger.info(`Super Admin user:${superadmin.username} created!`);
+            return res.json({
+                admin,
+                msg: "Super Admin Created Successfully" 
             })
-        }
-        if (!superAdmin.authenticate(password)) {
-            return res.status(401).json({
-                isLogged: false,
-                error: 'Email and Password dont Match !'
-            })
-        }
-
-        const token = createToken({ superAdmin }, "SUPER_ADMIN");
-        res.cookie('token', token, {
-            expires: new Date(Date.now() + 4 * 3600000)
         })
-        return token
-            ? res.status(200).json({ isLogged: true, token,superAdmin })
-            : res.status(500).json({ isLogged: false, error: "cant create token" });
-    })
-
-
 }
-export {loginSuperAdmin,signupSuperAdmin}
+const updateSuperAdmin = async (req, res) => {
+    console.log(req.body)
+    try {
+       if (req.body.username) {
+          await SuperAdmin.findOneAndUpdate({ _id: req.params.id }, req.body);
+       }
+       if (req.body.email || req.body.password) {
+          await User.findOneAndUpdate({ _id: req.params.id }, req.body.email)
+       }
+       logger.info(`Super Admin user:${req.body.username} Updated!`);
+       res.status(200).json({
+          status: true,
+          message: "Updated successfuly"
+       })
+    } catch (err) {
+        logger.error(err);
+       res.status(400).json({
+          status: false,
+          message: err
+       })
+    }
+ }
+const getSuperAdmin = async (req, res) => {
+    const id = req.params.id
+    try {
+        const superadmin = await SuperAdmin.findById({
+            _id: id
+        })
+        res.status(200).json({
+            status: true,
+            superadmin
+        })
+    } catch (err) {
+        res.status(400).json({
+            status: false,
+            msg: err
+        })
+    }
+}
+
+
+export { createSuperAdmin, updateSuperAdmin, getSuperAdmin }

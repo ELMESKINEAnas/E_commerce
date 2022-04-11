@@ -1,5 +1,6 @@
 import User from "../models/user.js"
 import Seller from "../models/seller"
+import Store from "../models/store"
 const logger = require('../../config/winston');
 const EmailSend = require('../helpers/email')
 
@@ -7,12 +8,21 @@ const EmailSend = require('../helpers/email')
 const createSeller = (req, res) => {
 
     const {
-        username,
+        firstName,
+        lastName,
         email,
+        document,
         password,
+        Address,
+        nameStore,
+        phone,
     } = req.body;
 
     const UserData = {
+        firstName,
+        lastName,
+        Address,
+        phone,
         email,
         password,
         role: "SELLER",
@@ -22,34 +32,32 @@ const createSeller = (req, res) => {
     const user = new User(UserData);
     user.save((err, User) => {
         if (err) {
-            logger.error(err);
+            // logger.error(err);
             return res.status(400).send(err)
 
         }
         const SellerData = {
-            username: username,
+            document: document,
+            nameStore:nameStore,
             user: user._id,
-            _id: user._id
+            _id: user._id, 
 
         }
         const seller = new Seller(SellerData);
-        seller.save(async (err, Seller) => {
+        seller.save(async (err, seller) => {
+
             if (err) {
                 const user = await User.findById({
                     _id: user._id
                 })
                 user.remove()
-                logger.error(err);
+                // logger.error(err);
                 return res.status(400).send(err)
             }
             user.hashed_password=undefined
             user.salt=undefined
-            let subj = "Your Login Info";
-            let msg = ` email : ${email}
-                password : ${password}`;
-                
-            EmailSend.mail(email, subj, msg)
-            logger.info(`Seller user:${req.body.username} created!`);
+            
+            // logger.info(`Costumer user:${req.body.username} created!`);
             return res.json({
                 user,
                 seller
@@ -164,6 +172,62 @@ const getSeller = async (req, res) => {
         })
     }
 }
+const getSellerStatus = async (req, res) => {
+    const date = new Date();
+    const lastYear = new Date(date.setFullYear(date.getFullYear() - 1));
+  
+    try {
+      const data = await Seller.aggregate([
+        { $match: { createdAt: { $gte: lastYear } } },
+        {
+          $project: {
+            month: { $month: "$createdAt" },
+          },
+        },
+        {
+          $group: {
+            _id: "$month",
+            total: { $sum: 1 },
+          },
+        },
+      ]);
+      res.status(200).json(data)
+    } catch (err) {
+      res.status(500).json(err);
+    }
+}
+
+const confirmAccount = async (req, res) => {
+
+    try {
+    const { id } = req.params;
+    let doc = await Seller.findOneAndUpdate({id}, {"isVerified":true},{new: true });
+    if(!doc){
+        return res.status(400).json({
+            status: false,
+            msg: "Invalid id"
+        })
+    }
+    const store = new Store({
+        name: doc.nameStore,
+        seller: doc._id,
+        _id: doc._id,
+    })
+    await store.save()
+
+    res.status(200).json({
+        status: true,
+        message: "Your Account is now Verified"
+    })
+
+    } catch (e) {
+    res.status(400).json({
+        status: false,
+        message: e.message
+        })
+    }
+}
 
 
-export { createSeller, removeSeller, searchSeller, updateSeller, getAllSellers, getSeller }
+
+export { createSeller, removeSeller, searchSeller, updateSeller, getAllSellers, getSeller,getSellerStatus,confirmAccount }

@@ -18,7 +18,7 @@ import {
 router.get("/confirmEmail/:id", confirmEmail)
 router.post("/createCustomer", createCustomer)
 router.post("/createOrder", createOrder)
-router.delete("/deleteCustomer/:id", deleteCustomer)
+router.delete("/deleteCustomer/:id",Auth('SUPERADMIN'), deleteCustomer)
 router.patch("/updateCustomer/:id", updateCustomer)
 
 export { router }

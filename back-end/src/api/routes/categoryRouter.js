@@ -6,15 +6,14 @@ import {
     getCategory ,getAllCategory, addCategory, deleteCategory, updateCategory
 } from "../controllers"
 
-// import {
-//     CreatUserValidator,
-//     Auth
-// } from "../middlewares"
+import {
+    Auth
+} from "../middlewares"
 
 router.get("/getOne/:id", getCategory)
 router.get("/getAll", getAllCategory)
-router.post("/create", addCategory)
-router.delete("/delete/:id", deleteCategory)
-router.patch("/update/:id", updateCategory)
+router.post("/create",Auth('ADMIN'), addCategory)
+router.delete("/delete/:id",Auth('ADMIN'), deleteCategory)
+router.patch("/update/:id",Auth('ADMIN'), updateCategory)
 
 export { router }
